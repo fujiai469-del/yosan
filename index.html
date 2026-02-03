@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIMIT KEEPER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #262626;
+            --bg-tertiary: #333333;
+            --accent: #F58220;
+            --accent-hover: #FF9A40;
+            --text-primary: #FFFFFF;
+            --text-secondary: #CCCCCC;
+            --text-muted: #888888;
+            --border-color: #404040;
+            --danger: #DC2626;
+            --success: #10B981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Roboto', Arial, sans-serif;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--accent);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .settings-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .settings-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .settings-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-primary);
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tab-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 14px 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: var(--bg-secondary);
+        }
+
+        .tab-btn.home-tab {
+            font-weight: 900;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Home Tab - Budget Overview */
+        .budget-overview {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent);
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .budget-overview-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .budget-overview-amount {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .budget-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .budget-stat {
+            text-align: center;
+        }
+
+        .budget-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .budget-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .budget-stat-value.spent {
+            color: var(--danger);
+        }
+
+        .budget-stat-value.remaining {
+            color: var(--success);
+        }
+
+        /* Category Summary Cards */
+        .category-summary-list {
+            margin-top: 20px;
+        }
+
+        .category-summary-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-summary-card:hover {
+            border-color: var(--accent);
+            background: var(--bg-secondary);
+        }
+
+        .category-summary-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-summary-name::before {
+            content: '▶';
+            color: var(--accent);
+            font-size: 10px;
+        }
+
+        .category-summary-spent {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Balance Display */
+        .balance-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .balance-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -2px;
+        }
+
+        .balance-amount.negative {
+            color: var(--danger);
+        }
+
+        .balance-amount.safe {
+            color: var(--success);
+        }
+
+        .category-budget-info {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Input Section */
+        .input-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-section h2 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        input[type="number"]::placeholder,
+        input[type="text"]::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Custom Select Styling */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--accent);
+            pointer-events: none;
+        }
+
+        select {
+            cursor: pointer;
+            padding-right: 40px;
+        }
+
+        select option {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 10px;
+        }
+
+        /* Pay Button */
+        .pay-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent);
+            border: none;
+            border-radius: 2px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pay-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .pay-btn:active {
+            transform: translateY(0);
+        }
+
+        /* History Section */
+        .history-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .history-header h2 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .clear-history-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            padding: 6px 12px;
+            color: var(--text-muted);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clear-history-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .history-category {
+            background: var(--accent);
+            color: var(--text-primary);
+            padding: 3px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 2px;
+        }
+
+        .history-category.uncategorized {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .history-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .empty-history {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--accent);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-section {
+            margin-bottom: 24px;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section h3 {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            border-radius: 2px;
+            padding: 12px 20px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border: none;
+            border-radius: 2px;
+            padding: 12px 20px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #EF4444;
+        }
+
+        .budget-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .budget-form input {
+            flex: 1;
+        }
+
+        /* Category Management */
+        .category-add-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .category-add-form input {
+            flex: 1;
+        }
+
+        .category-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            margin-bottom: 8px;
+        }
+
+        .category-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .category-delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .category-delete-btn:hover {
+            color: var(--danger);
+        }
+
+        .category-delete-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .empty-categories {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Live Ticker Effect */
+        .ticker-bar {
+            background: var(--accent);
+            padding: 8px 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            animation: ticker 20s linear infinite;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* No categories message */
+        .no-categories-msg {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        .no-categories-msg button {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Ticker Bar -->
+    <div class="ticker-bar">
+        <div class="ticker-content">
+            ● LIMIT KEEPER — 減算式予算管理システム ● 支出を記録し、残高をリアルタイムで追跡 ● LIMIT KEEPER — 減算式予算管理システム ● 支出を記録し、残高をリアルタイムで追跡 ●
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-accent">▶</span> LIMIT <span class="logo-accent">KEEPER</span>
+        </div>
+        <button class="settings-btn" onclick="openSettings()">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+                    fill="currentColor" />
+                <path
+                    d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.2864 15.9606C19.3456 16.285 19.5009 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4209 16.365 19.2656 16.0406 19.2064C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.258 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.2864C7.71502 19.3456 7.41568 19.5009 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.57909 16.6643 4.73439 16.365 4.79358 16.0406C4.85277 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.0113 9.77251C4.28059 9.5799 4.48572 9.31074 4.6 9C4.73312 8.69838 4.77277 8.36381 4.71358 8.03941C4.65439 7.71502 4.49909 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.57909 7.63502 4.73439 7.95941 4.79358C8.28381 4.85277 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77277 15.9606 4.71358C16.285 4.65439 16.5843 4.49909 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4209 7.33568 19.2656 7.63502 19.2064 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav" id="tabNav">
+        <button class="tab-btn home-tab active" data-tab="home">◆ ホーム</button>
+        <!-- Category tabs will be added dynamically -->
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Home Tab Content -->
+        <div class="tab-content active" id="tab-home">
+            <div class="budget-overview">
+                <div class="budget-overview-label">総予算 / Total Budget</div>
+                <div class="budget-overview-amount" id="totalBudgetDisplay">¥0</div>
+                <div class="budget-stats">
+                    <div class="budget-stat">
+                        <div class="budget-stat-label">使用済み</div>
+                        <div class="budget-stat-value spent" id="totalSpentDisplay">¥0</div>
+                    </div>
+                    <div class="budget-stat">
+                        <div class="budget-stat-label">残高</div>
+                        <div class="budget-stat-value remaining" id="totalRemainingDisplay">¥0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Summary Cards -->
+            <div class="category-summary-list" id="categorySummaryList">
+                <!-- Category cards will be added dynamically -->
+            </div>
+        </div>
+
+        <!-- Category Tab Content (template) -->
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>設定 / Settings</h2>
+                <button class="modal-close" onclick="closeSettings()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Budget Setting -->
+                <div class="modal-section">
+                    <h3>予算設定 / Budget</h3>
+                    <div class="budget-form">
+                        <input type="number" id="budgetInput" placeholder="予算額を入力" min="0">
+                        <button class="btn-primary" onclick="setBudget()">設定</button>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <button class="btn-danger" onclick="resetAll()">全データリセット</button>
+                    </div>
+                </div>
+
+                <!-- Category Management -->
+                <div class="modal-section">
+                    <h3>カテゴリ管理 / Categories</h3>
+                    <div class="category-add-form">
+                        <input type="text" id="newCategoryInput" placeholder="新しいカテゴリ名">
+                        <button class="btn-primary" onclick="addCategory()">追加</button>
+                    </div>
+                    <div class="category-list" id="categoryList">
+                        <div class="empty-categories">カテゴリがありません</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let state = {
+            budget: 0,
+            balance: 0,
+            spent: 0,
+            history: [],
+            categories: []
+        };
+
+        let currentTab = 'home';
+
+        // Initialize
+        function init() {
+            loadState();
+            renderAll();
+        }
+
+        // Load state from localStorage
+        function loadState() {
+            const savedState = localStorage.getItem('limitKeeperState');
+            if (savedState) {
+                state = JSON.parse(savedState);
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('limitKeeperState', JSON.stringify(state));
+        }
+
+        // Render all components
+        function renderAll() {
+            renderTabs();
+            renderHomeTab();
+            renderCategoryTabs();
+            renderCategoryList();
+        }
+
+        // Render tab navigation
+        function renderTabs() {
+            const tabNav = document.getElementById('tabNav');
+            tabNav.innerHTML = '<button class="tab-btn home-tab ' + (currentTab === 'home' ? 'active' : '') + '" data-tab="home" onclick="switchTab(\'home\')">◆ ホーム</button>';
+
+            state.categories.forEach(cat => {
+                const isActive = currentTab === cat ? 'active' : '';
+                tabNav.innerHTML += `<button class="tab-btn ${isActive}" data-tab="${cat}" onclick="switchTab('${cat}')">${cat}</button>`;
+            });
+        }
+
+        // Switch tab
+        function switchTab(tabName) {
+            currentTab = tabName;
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const targetTab = document.getElementById('tab-' + tabName);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        }
+
+        // Render home tab
+        function renderHomeTab() {
+            document.getElementById('totalBudgetDisplay').textContent = '¥' + state.budget.toLocaleString();
+            document.getElementById('totalSpentDisplay').textContent = '¥' + state.spent.toLocaleString();
+            document.getElementById('totalRemainingDisplay').textContent = '¥' + state.balance.toLocaleString();
+
+            // Category summary cards
+            const summaryList = document.getElementById('categorySummaryList');
+
+            if (state.categories.length === 0) {
+                summaryList.innerHTML = `
+                    <div class="no-categories-msg">
+                        カテゴリがありません<br>設定からカテゴリを追加してください
+                        <br><button class="btn-primary" onclick="openSettings()">設定を開く</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            state.categories.forEach(cat => {
+                const catSpent = state.history
+                    .filter(h => h.category === cat)
+                    .reduce((sum, h) => sum + h.amount, 0);
+
+                html += `
+                    <div class="category-summary-card" onclick="switchTab('${cat}')">
+                        <span class="category-summary-name">${cat}</span>
+                        <span class="category-summary-spent">¥${catSpent.toLocaleString()}</span>
+                    </div>
+                `;
+            });
+
+            // Add uncategorized if exists
+            const uncatSpent = state.history
+                .filter(h => !h.category)
+                .reduce((sum, h) => sum + h.amount, 0);
+
+            if (uncatSpent > 0) {
+                html += `
+                    <div class="category-summary-card" style="opacity: 0.7;">
+                        <span class="category-summary-name">未分類</span>
+                        <span class="category-summary-spent">¥${uncatSpent.toLocaleString()}</span>
+                    </div>
+                `;
+            }
+
+            summaryList.innerHTML = html;
+        }
+
+        // Render category tabs content
+        function renderCategoryTabs() {
+            const container = document.querySelector('.container');
+
+            // Remove existing category tabs
+            document.querySelectorAll('.tab-content:not(#tab-home)').forEach(el => el.remove());
+
+            state.categories.forEach(cat => {
+                const catSpent = state.history
+                    .filter(h => h.category === cat)
+                    .reduce((sum, h) => sum + h.amount, 0);
+
+                const catHistory = state.history.filter(h => h.category === cat);
+
+                const tabContent = document.createElement('div');
+                tabContent.className = 'tab-content' + (currentTab === cat ? ' active' : '');
+                tabContent.id = 'tab-' + cat;
+
+                tabContent.innerHTML = `
+                    <div class="balance-section">
+                        <div class="balance-label">${cat} 支出合計</div>
+                        <div class="balance-amount">¥${catSpent.toLocaleString()}</div>
+                        <div class="category-budget-info">
+                            このカテゴリでの支出: ${catHistory.length}件
+                        </div>
+                    </div>
+
+                    <div class="input-section">
+                        <h2>${cat}の支出を入力</h2>
+                        <div class="input-group">
+                            <label>金額 (Amount)</label>
+                            <input type="number" id="amount-${cat}" placeholder="0" min="0">
+                        </div>
+                        <button class="pay-btn" onclick="recordExpense('${cat}')">▶ PAY</button>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h2>${cat}の履歴</h2>
+                            <button class="clear-history-btn" onclick="clearCategoryHistory('${cat}')">クリア</button>
+                        </div>
+                        <div class="history-list">
+                            ${catHistory.length === 0 ?
+                        '<div class="empty-history">履歴がありません</div>' :
+                        catHistory.slice().reverse().map(item => `
+                                    <div class="history-item">
+                                        <div class="history-info">
+                                            <span class="history-date">${item.date}</span>
+                                        </div>
+                                        <span class="history-amount">-¥${item.amount.toLocaleString()}</span>
+                                    </div>
+                                `).join('')
+                    }
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(tabContent);
+            });
+
+            // Add enter key support for new inputs
+            state.categories.forEach(cat => {
+                const input = document.getElementById('amount-' + cat);
+                if (input) {
+                    input.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') recordExpense(cat);
+                    });
+                }
+            });
+        }
+
+        // Render category list in settings
+        function renderCategoryList() {
+            const listEl = document.getElementById('categoryList');
+
+            if (state.categories.length === 0) {
+                listEl.innerHTML = '<div class="empty-categories">カテゴリがありません</div>';
+                return;
+            }
+
+            listEl.innerHTML = state.categories.map(cat => `
+                <div class="category-item">
+                    <span class="category-name">${cat}</span>
+                    <button class="category-delete-btn" onclick="deleteCategory('${cat}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Record expense
+        function recordExpense(category) {
+            const amountInput = document.getElementById('amount-' + category);
+
+            const amount = parseInt(amountInput.value) || 0;
+            if (amount <= 0) {
+                alert('金額を入力してください');
+                return;
+            }
+
+            const now = new Date();
+            const date = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            state.history.push({
+                date,
+                category,
+                amount
+            });
+
+            state.spent += amount;
+            state.balance = state.budget - state.spent;
+
+            saveState();
+            renderAll();
+
+            // Clear input
+            amountInput.value = '';
+        }
+
+        // Set budget
+        function setBudget() {
+            const budgetInput = document.getElementById('budgetInput');
+            const budget = parseInt(budgetInput.value) || 0;
+
+            if (budget <= 0) {
+                alert('予算を入力してください');
+                return;
+            }
+
+            state.budget = budget;
+            state.balance = budget - state.spent;
+
+            saveState();
+            renderAll();
+            budgetInput.value = '';
+            closeSettings();
+        }
+
+        // Add category
+        function addCategory() {
+            const input = document.getElementById('newCategoryInput');
+            const categoryName = input.value.trim();
+
+            if (!categoryName) {
+                alert('カテゴリ名を入力してください');
+                return;
+            }
+
+            if (state.categories.includes(categoryName)) {
+                alert('このカテゴリは既に存在します');
+                return;
+            }
+
+            state.categories.push(categoryName);
+            saveState();
+            renderAll();
+            input.value = '';
+        }
+
+        // Delete category
+        function deleteCategory(categoryName) {
+            if (!confirm(`「${categoryName}」を削除しますか？`)) return;
+
+            state.categories = state.categories.filter(c => c !== categoryName);
+
+            // Reset to home tab if current tab is deleted
+            if (currentTab === categoryName) {
+                currentTab = 'home';
+            }
+
+            saveState();
+            renderAll();
+        }
+
+        // Clear category history
+        function clearCategoryHistory(category) {
+            if (!confirm(`「${category}」の履歴をすべて削除しますか？`)) return;
+
+            const removedAmount = state.history
+                .filter(h => h.category === category)
+                .reduce((sum, h) => sum + h.amount, 0);
+
+            state.history = state.history.filter(h => h.category !== category);
+            state.spent -= removedAmount;
+            state.balance = state.budget - state.spent;
+
+            saveState();
+            renderAll();
+        }
+
+        // Reset all data
+        function resetAll() {
+            if (!confirm('すべてのデータをリセットしますか？この操作は元に戻せません。')) return;
+
+            state = {
+                budget: 0,
+                balance: 0,
+                spent: 0,
+                history: [],
+                categories: []
+            };
+
+            currentTab = 'home';
+            saveState();
+            renderAll();
+            closeSettings();
+        }
+
+        // Settings modal controls
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('settingsModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeSettings();
+            }
+        });
+
+        // Enter key support for inputs
+        document.getElementById('budgetInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') setBudget();
+        });
+
+        document.getElementById('newCategoryInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') addCategory();
+        });
+
+        // Initialize app
+        init();
+    </script>
+</body>
+
+</html>
