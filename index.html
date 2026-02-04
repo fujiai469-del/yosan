@@ -3,12 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LIMIT KEEPER</title>
-    <link rel="manifest"
-        href="data:application/json,{&quot;name&quot;:&quot;Limit Keeper&quot;,&quot;short_name&quot;:&quot;Limit&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%231a1a1a&quot;,&quot;theme_color&quot;:&quot;%23F58220&quot;}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a1a">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,20 +29,23 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Inter', 'Roboto', Arial, sans-serif;
-            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
             min-height: 100vh;
             color: var(--text-primary);
+            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* Header */
+        /* Header - Mobile Optimized */
         .header {
             background: var(--bg-primary);
             border-bottom: 2px solid var(--accent);
-            padding: 16px 20px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -53,51 +55,43 @@
         }
 
         .logo {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 900;
-            letter-spacing: 2px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: 1px;
         }
 
         .logo-accent {
             color: var(--accent);
         }
 
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-
         .header-btn {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 2px;
-            padding: 10px 12px;
+            padding: 10px;
             cursor: pointer;
-            transition: all 0.2s;
             color: var(--text-primary);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .header-btn:hover {
+        .header-btn:active {
             background: var(--accent);
-            border-color: var(--accent);
         }
 
         .header-btn svg {
             width: 20px;
             height: 20px;
+            display: block;
         }
 
-        /* Tab Navigation */
+        /* Tab Navigation - Horizontal Scroll */
         .tab-nav {
             background: var(--bg-primary);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             overflow-x: auto;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
 
         .tab-nav::-webkit-scrollbar {
@@ -108,20 +102,13 @@
             background: transparent;
             border: none;
             border-bottom: 3px solid transparent;
-            padding: 14px 20px;
+            padding: 12px 16px;
             color: var(--text-muted);
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
+            letter-spacing: 0.5px;
             white-space: nowrap;
-            transition: all 0.2s;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-secondary);
-            background: var(--bg-secondary);
+            cursor: pointer;
         }
 
         .tab-btn.active {
@@ -130,14 +117,20 @@
             background: var(--bg-secondary);
         }
 
-        /* Main Container */
+        /* Main Container - Full Width Mobile */
         .container {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 20px;
+            max-width: 100%;
+            padding: 12px;
         }
 
-        /* Tab Content */
+        @media (min-width: 480px) {
+            .container {
+                max-width: 480px;
+                margin: 0 auto;
+                padding: 16px;
+            }
+        }
+
         .tab-content {
             display: none;
         }
@@ -146,46 +139,38 @@
             display: block;
         }
 
-        /* Main Balance Display */
+        /* Balance Hero - Compact Mobile */
         .balance-hero {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #0d0d0d 100%);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
             border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent);
-            padding: 30px;
-            margin-bottom: 20px;
+            border-left: 3px solid var(--accent);
+            padding: 20px 16px;
+            margin-bottom: 12px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .balance-hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(245, 130, 32, 0.1) 0%, transparent 60%);
-            pointer-events: none;
         }
 
         .balance-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .balance-amount {
-            font-size: 56px;
+            font-size: 42px;
             font-weight: 900;
             color: var(--accent);
-            letter-spacing: -2px;
-            margin-bottom: 16px;
-            text-shadow: 0 0 40px rgba(245, 130, 32, 0.3);
-            transition: color 0.3s;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        @media (min-width: 400px) {
+            .balance-amount {
+                font-size: 52px;
+            }
         }
 
         .balance-amount.warning {
@@ -210,182 +195,218 @@
         }
 
         /* Progress Bar */
-        .progress-container {
-            margin: 20px 0;
-        }
-
         .progress-bar {
-            height: 8px;
+            height: 6px;
             background: var(--bg-tertiary);
-            border-radius: 4px;
+            border-radius: 3px;
             overflow: hidden;
+            margin-bottom: 6px;
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--success) 0%, var(--warning) 50%, var(--danger) 100%);
             background-size: 200% 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
+            transition: width 0.3s;
         }
 
         .progress-labels {
             display: flex;
             justify-content: space-between;
-            margin-top: 8px;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
         }
 
-        /* Stats Grid */
+        /* Stats Grid - 3 Column Mobile */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .stat-card {
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            padding: 16px 12px;
+            padding: 12px 8px;
             text-align: center;
         }
 
         .stat-label {
             font-size: 9px;
             color: var(--text-muted);
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .stat-value {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 700;
-            color: var(--text-primary);
+        }
+
+        @media (min-width: 400px) {
+            .stat-value {
+                font-size: 16px;
+            }
         }
 
         .stat-value.accent {
             color: var(--accent);
         }
 
-        /* Quick Amount Buttons */
+        /* Pie Chart Section */
+        .chart-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .chart-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        @media (min-width: 400px) {
+            .chart-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        .pie-chart {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .pie-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pie-center-label {
+            font-size: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .pie-center-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .legend-amount {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .no-chart-data {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        /* Quick Amount Buttons - Mobile Grid */
         .quick-amounts {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
 
         .quick-btn {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 2px;
-            padding: 12px 8px;
+            padding: 12px 6px;
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .quick-btn:hover {
+        .quick-btn:active {
             background: var(--accent);
-            border-color: var(--accent);
             color: var(--text-primary);
         }
 
-        /* Category Summary Cards */
-        .category-summary-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .category-summary-card:hover {
-            border-color: var(--accent);
-            background: var(--bg-secondary);
-        }
-
-        .category-summary-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .category-summary-name::before {
-            content: '▶';
-            color: var(--accent);
-            font-size: 10px;
-        }
-
-        .category-summary-spent {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        /* Balance Display for Category */
-        .balance-section {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent);
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        .category-balance-amount {
-            font-size: 42px;
-            font-weight: 900;
-            color: var(--accent);
-            letter-spacing: -2px;
-        }
-
-        .category-budget-info {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-color);
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        /* Input Section */
+        /* Input Section - Mobile Optimized */
         .input-section {
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 16px 12px;
+            margin-bottom: 12px;
         }
 
         .input-section h2 {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .input-group label {
             display: block;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
-            margin-bottom: 6px;
-            letter-spacing: 1px;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
@@ -393,56 +414,48 @@
         input[type="text"],
         select {
             width: 100%;
-            padding: 14px 16px;
+            padding: 14px 12px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 2px;
             color: var(--text-primary);
-            font-size: 18px;
-            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-family: inherit;
             font-weight: 600;
-            transition: border-color 0.2s;
             -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
         }
 
-        input[type="number"]:focus,
-        input[type="text"]:focus,
+        input:focus,
         select:focus {
             outline: none;
             border-color: var(--accent);
         }
 
-        input[type="number"]::placeholder,
-        input[type="text"]::placeholder {
-            color: var(--text-muted);
-            font-weight: 400;
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23F58220'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
         }
 
-        /* Pay Button */
+        /* Pay Button - Large Touch Target */
         .pay-btn {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: var(--accent);
             border: none;
             border-radius: 2px;
             color: var(--text-primary);
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .pay-btn:hover {
-            background: var(--accent-hover);
-            transform: translateY(-1px);
         }
 
         .pay-btn:active {
-            transform: translateY(0);
+            background: var(--accent-hover);
         }
 
         /* Undo Button */
@@ -455,45 +468,78 @@
             color: var(--text-muted);
             font-size: 12px;
             font-weight: 600;
-            letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 10px;
+            margin-top: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-        }
-
-        .undo-btn:hover {
-            border-color: var(--warning);
-            color: var(--warning);
+            gap: 6px;
         }
 
         .undo-btn:disabled {
             opacity: 0.3;
-            cursor: not-allowed;
+        }
+
+        .undo-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Category Cards - Compact */
+        .category-summary-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .category-summary-card:active {
+            border-color: var(--accent);
+        }
+
+        .category-summary-name {
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-summary-name::before {
+            content: '▶';
+            color: var(--accent);
+            font-size: 8px;
+        }
+
+        .category-summary-spent {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
         }
 
         /* History Section */
         .history-section {
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            padding: 20px;
+            padding: 16px 12px;
         }
 
         .history-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .history-header h2 {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
@@ -501,20 +547,14 @@
             background: transparent;
             border: 1px solid var(--border-color);
             border-radius: 2px;
-            padding: 6px 12px;
+            padding: 6px 10px;
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: 10px;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .clear-history-btn:hover {
-            border-color: var(--danger);
-            color: var(--danger);
         }
 
         .history-list {
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
         }
 
@@ -522,7 +562,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -533,40 +573,61 @@
         .history-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .history-date {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             font-weight: 600;
         }
 
         .history-category {
             background: var(--accent);
-            color: var(--text-primary);
-            padding: 3px 8px;
-            font-size: 10px;
+            padding: 2px 6px;
+            font-size: 9px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
             border-radius: 2px;
         }
 
         .history-amount {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            color: var(--text-primary);
         }
 
         .empty-history {
             text-align: center;
             color: var(--text-muted);
-            padding: 40px 20px;
-            font-size: 14px;
+            padding: 30px 16px;
+            font-size: 13px;
         }
 
-        /* Modal */
+        /* Category Tab Balance */
+        .balance-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent);
+            padding: 20px 16px;
+            margin-bottom: 12px;
+        }
+
+        .category-balance-amount {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--accent);
+        }
+
+        .category-budget-info {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Modal - Full Screen Mobile */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -574,39 +635,53 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 200;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            padding: 0;
         }
 
         .modal-overlay.active {
-            display: flex;
+            display: block;
         }
 
         .modal {
             background: var(--bg-primary);
-            border: 1px solid var(--border-color);
             width: 100%;
-            max-width: 400px;
-            max-height: 80vh;
+            height: 100%;
             overflow-y: auto;
+        }
+
+        @media (min-width: 480px) {
+            .modal-overlay.active {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .modal {
+                max-width: 400px;
+                height: auto;
+                max-height: 85vh;
+                border: 1px solid var(--border-color);
+            }
         }
 
         .modal-header {
             background: var(--bg-secondary);
             border-bottom: 2px solid var(--accent);
-            padding: 16px 20px;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
         }
 
         .modal-header h2 {
             font-size: 14px;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
@@ -614,18 +689,13 @@
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            line-height: 1;
-            transition: color 0.2s;
-        }
-
-        .modal-close:hover {
-            color: var(--accent);
+            padding: 4px 8px;
         }
 
         .modal-body {
-            padding: 20px;
+            padding: 16px;
         }
 
         .modal-section {
@@ -637,10 +707,10 @@
         }
 
         .modal-section h3 {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             margin-bottom: 12px;
             padding-bottom: 8px;
@@ -651,50 +721,38 @@
             background: var(--accent);
             border: none;
             border-radius: 2px;
-            padding: 12px 20px;
+            padding: 12px 16px;
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 1px;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
         }
 
         .btn-danger {
             background: var(--danger);
             border: none;
             border-radius: 2px;
-            padding: 12px 20px;
+            padding: 12px 16px;
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 1px;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-danger:hover {
-            background: #EF4444;
+            width: 100%;
         }
 
         .budget-form {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .budget-form input {
             flex: 1;
         }
 
-        /* Category Management */
         .category-add-form {
             display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .category-add-form input {
@@ -702,7 +760,7 @@
         }
 
         .category-list {
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
         }
 
@@ -713,26 +771,20 @@
             padding: 10px 12px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .category-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: var(--text-primary);
         }
 
         .category-delete-btn {
             background: transparent;
             border: none;
             color: var(--text-muted);
+            padding: 6px;
             cursor: pointer;
-            padding: 4px;
-            transition: color 0.2s;
-        }
-
-        .category-delete-btn:hover {
-            color: var(--danger);
         }
 
         .category-delete-btn svg {
@@ -743,20 +795,38 @@
         .empty-categories {
             text-align: center;
             color: var(--text-muted);
-            padding: 20px;
-            font-size: 13px;
+            padding: 16px;
+            font-size: 12px;
         }
 
-        /* Daily Limit Warning */
+        .data-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            padding: 12px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Daily Warning */
         .daily-limit-warning {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid var(--warning);
-            padding: 12px 16px;
-            margin-bottom: 20px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 13px;
+            gap: 8px;
+            font-size: 11px;
             color: var(--warning);
         }
 
@@ -766,38 +836,41 @@
             color: var(--danger);
         }
 
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 6px;
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--accent);
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 300;
+            opacity: 0;
+            transition: all 0.3s;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-
-        /* Live Ticker Effect */
+        /* Ticker */
         .ticker-bar {
             background: var(--accent);
-            padding: 8px 0;
+            padding: 6px 0;
             overflow: hidden;
             white-space: nowrap;
         }
 
         .ticker-content {
             display: inline-block;
-            animation: ticker 20s linear infinite;
-            font-size: 11px;
+            animation: ticker 15s linear infinite;
+            font-size: 10px;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
@@ -814,86 +887,48 @@
         .no-categories-msg {
             text-align: center;
             color: var(--text-muted);
-            padding: 40px 20px;
-            font-size: 14px;
+            padding: 24px 16px;
+            font-size: 13px;
         }
 
         .no-categories-msg button {
-            margin-top: 16px;
+            margin-top: 12px;
         }
 
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--bg-tertiary);
-            border: 1px solid var(--accent);
-            padding: 14px 24px;
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
             border-radius: 2px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            z-index: 300;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Export/Import Section */
-        .data-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 2px;
-            padding: 12px 16px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent);
-            color: var(--accent);
         }
     </style>
 </head>
 
 <body>
-    <!-- Ticker Bar -->
+    <!-- Ticker -->
     <div class="ticker-bar">
         <div class="ticker-content" id="tickerContent">
-            ● LIMIT KEEPER — 減算式予算管理システム ● 支出を記録し、残高をリアルタイムで追跡 ● LIMIT KEEPER — 減算式予算管理システム ● 支出を記録し、残高をリアルタイムで追跡 ●
+            ● LIMIT KEEPER ● 残高をリアルタイムで追跡 ● LIMIT KEEPER ● 残高をリアルタイムで追跡 ●
         </div>
     </div>
 
     <!-- Header -->
     <header class="header">
-        <div class="logo">
-            <span class="logo-accent">▶</span> LIMIT <span class="logo-accent">KEEPER</span>
-        </div>
-        <div class="header-actions">
-            <button class="header-btn" onclick="openSettings()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3" />
-                    <path
-                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                </svg>
-            </button>
-        </div>
+        <div class="logo"><span class="logo-accent">▶</span> LIMIT <span class="logo-accent">KEEPER</span></div>
+        <button class="header-btn" onclick="openSettings()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+        </button>
     </header>
 
     <!-- Tab Navigation -->
@@ -903,32 +938,26 @@
 
     <!-- Main Container -->
     <div class="container">
-        <!-- Home Tab Content -->
         <div class="tab-content active" id="tab-home">
-            <!-- Daily Limit Warning (if applicable) -->
             <div class="daily-limit-warning" id="dailyWarning" style="display: none;">
                 <span>⚠️</span>
                 <span id="dailyWarningText"></span>
             </div>
 
-            <!-- Main Balance Hero -->
+            <!-- Balance Hero -->
             <div class="balance-hero">
-                <div class="balance-label">使える残高 / Available</div>
+                <div class="balance-label">使える残高</div>
                 <div class="balance-amount" id="mainBalanceDisplay">¥0</div>
-
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                    </div>
-                    <div class="progress-labels">
-                        <span>0%使用</span>
-                        <span id="usagePercent">0%使用</span>
-                    </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-labels">
+                    <span>0%</span>
+                    <span id="usagePercent">0%使用</span>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
+            <!-- Stats -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">予算</div>
@@ -944,9 +973,17 @@
                 </div>
             </div>
 
-            <!-- Quick Input -->
+            <!-- Pie Chart -->
+            <div class="chart-section" id="chartSection">
+                <div class="chart-title">カテゴリ別支出</div>
+                <div class="chart-container" id="chartContainer">
+                    <div class="no-chart-data">支出データがありません</div>
+                </div>
+            </div>
+
+            <!-- Input -->
             <div class="input-section">
-                <h2>クイック入力</h2>
+                <h2>支出を入力</h2>
                 <div class="quick-amounts">
                     <button class="quick-btn" onclick="quickPay(100)">¥100</button>
                     <button class="quick-btn" onclick="quickPay(500)">¥500</button>
@@ -954,34 +991,34 @@
                     <button class="quick-btn" onclick="quickPay(5000)">¥5K</button>
                 </div>
                 <div class="input-group">
-                    <label>金額を入力</label>
-                    <input type="number" id="homeAmountInput" placeholder="0" min="0">
+                    <label>金額</label>
+                    <input type="number" id="homeAmountInput" placeholder="0" min="0" inputmode="numeric">
                 </div>
                 <div class="input-group">
                     <label>カテゴリ</label>
-                    <select id="homeCategorySelect" style="padding-right: 40px;">
+                    <select id="homeCategorySelect">
                         <option value="">-- 未分類 --</option>
                     </select>
                 </div>
                 <button class="pay-btn" onclick="homeRecordExpense()">▶ PAY</button>
                 <button class="undo-btn" id="undoBtn" onclick="undoLastExpense()" disabled>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 10h10a5 5 0 0 1 0 10H9" />
                         <polyline points="3,10 7,6" />
                         <polyline points="3,10 7,14" />
                     </svg>
-                    最後の入力を取消
+                    取消
                 </button>
             </div>
 
-            <!-- Category Summary Cards -->
-            <div class="category-summary-list" id="categorySummaryList"></div>
+            <!-- Category Cards -->
+            <div id="categorySummaryList"></div>
 
-            <!-- Recent History -->
+            <!-- History -->
             <div class="history-section">
                 <div class="history-header">
                     <h2>最近の履歴</h2>
-                    <button class="clear-history-btn" onclick="clearAllHistory()">全クリア</button>
+                    <button class="clear-history-btn" onclick="clearAllHistory()">クリア</button>
                 </div>
                 <div class="history-list" id="homeHistoryList">
                     <div class="empty-history">履歴がありません</div>
@@ -994,32 +1031,27 @@
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <div class="modal-header">
-                <h2>設定 / Settings</h2>
+                <h2>設定</h2>
                 <button class="modal-close" onclick="closeSettings()">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Budget Setting -->
                 <div class="modal-section">
-                    <h3>予算設定 / Budget</h3>
+                    <h3>予算設定</h3>
                     <div class="budget-form">
-                        <input type="number" id="budgetInput" placeholder="予算額を入力" min="0">
+                        <input type="number" id="budgetInput" placeholder="予算額" min="0" inputmode="numeric">
                         <button class="btn-primary" onclick="setBudget()">設定</button>
                     </div>
                 </div>
-
-                <!-- Category Management -->
                 <div class="modal-section">
-                    <h3>カテゴリ管理 / Categories</h3>
+                    <h3>カテゴリ管理</h3>
                     <div class="category-add-form">
-                        <input type="text" id="newCategoryInput" placeholder="新しいカテゴリ名">
+                        <input type="text" id="newCategoryInput" placeholder="カテゴリ名">
                         <button class="btn-primary" onclick="addCategory()">追加</button>
                     </div>
                     <div class="category-list" id="categoryList">
                         <div class="empty-categories">カテゴリがありません</div>
                     </div>
                 </div>
-
-                <!-- Data Management -->
                 <div class="modal-section">
                     <h3>データ管理</h3>
                     <div class="data-actions">
@@ -1029,69 +1061,52 @@
                         <input type="file" id="importFile" accept=".json" style="display:none"
                             onchange="importData(event)">
                     </div>
-                    <div style="margin-top: 16px;">
-                        <button class="btn-danger" onclick="resetAll()">全データリセット</button>
-                    </div>
+                    <button class="btn-danger" onclick="resetAll()">全データリセット</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // State
-        let state = {
-            budget: 0,
-            balance: 0,
-            spent: 0,
-            history: [],
-            categories: []
-        };
+        const COLORS = ['#F58220', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#6366F1', '#14B8A6'];
 
+        let state = { budget: 0, balance: 0, spent: 0, history: [], categories: [] };
         let currentTab = 'home';
-        let lastExpense = null;
 
-        // Initialize
         function init() {
             loadState();
             renderAll();
             updateTicker();
         }
 
-        // Load state from localStorage
         function loadState() {
-            const savedState = localStorage.getItem('limitKeeperState');
-            if (savedState) {
-                state = JSON.parse(savedState);
-            }
+            const saved = localStorage.getItem('limitKeeperState');
+            if (saved) state = JSON.parse(saved);
         }
 
-        // Save state to localStorage
         function saveState() {
             localStorage.setItem('limitKeeperState', JSON.stringify(state));
         }
 
-        // Show toast notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
         }
 
-        // Update ticker with current balance
         function updateTicker() {
-            const ticker = document.getElementById('tickerContent');
-            const balanceText = state.balance >= 0 ? `残高 ¥${state.balance.toLocaleString()}` : `超過 ¥${Math.abs(state.balance).toLocaleString()}`;
-            ticker.innerHTML = `●  ${balanceText}  ●  LIMIT KEEPER  ●  ${balanceText}  ●  LIMIT KEEPER  ●  ${balanceText}  ●  LIMIT KEEPER  ●`;
+            const t = document.getElementById('tickerContent');
+            const b = state.balance >= 0 ? `残高 ¥${state.balance.toLocaleString()}` : `超過 ¥${Math.abs(state.balance).toLocaleString()}`;
+            t.innerHTML = `●  ${b}  ●  LIMIT KEEPER  ●  ${b}  ●  LIMIT KEEPER  ●`;
         }
 
-        // Render all components
         function renderAll() {
             renderTabs();
             renderHomeTab();
+            renderPieChart();
             renderCategoryTabs();
             renderCategoryList();
             renderHomeCategorySelect();
@@ -1099,166 +1114,170 @@
             updateTicker();
         }
 
-        // Render tab navigation
         function renderTabs() {
-            const tabNav = document.getElementById('tabNav');
-            tabNav.innerHTML = '<button class="tab-btn ' + (currentTab === 'home' ? 'active' : '') + '" data-tab="home" onclick="switchTab(\'home\')">◆ ホーム</button>';
-
+            const nav = document.getElementById('tabNav');
+            nav.innerHTML = `<button class="tab-btn ${currentTab === 'home' ? 'active' : ''}" data-tab="home" onclick="switchTab('home')">◆ ホーム</button>`;
             state.categories.forEach(cat => {
-                const isActive = currentTab === cat ? 'active' : '';
-                tabNav.innerHTML += `<button class="tab-btn ${isActive}" data-tab="${cat}" onclick="switchTab('${cat}')">${cat}</button>`;
+                nav.innerHTML += `<button class="tab-btn ${currentTab === cat ? 'active' : ''}" data-tab="${cat}" onclick="switchTab('${cat}')">${cat}</button>`;
             });
         }
 
-        // Render home category select
         function renderHomeCategorySelect() {
-            const select = document.getElementById('homeCategorySelect');
-            select.innerHTML = '<option value="">-- 未分類 --</option>';
-            state.categories.forEach(cat => {
-                select.innerHTML += `<option value="${cat}">${cat}</option>`;
-            });
+            const sel = document.getElementById('homeCategorySelect');
+            sel.innerHTML = '<option value="">-- 未分類 --</option>';
+            state.categories.forEach(cat => sel.innerHTML += `<option value="${cat}">${cat}</option>`);
         }
 
-        // Switch tab
-        function switchTab(tabName) {
-            currentTab = tabName;
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.tab === tabName) btn.classList.add('active');
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.tab === tab);
             });
-
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            const targetTab = document.getElementById('tab-' + tabName);
-            if (targetTab) targetTab.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const target = document.getElementById('tab-' + tab);
+            if (target) target.classList.add('active');
         }
 
-        // Calculate today's spending
         function getTodaySpending() {
             const today = new Date().toDateString();
-            return state.history
-                .filter(h => new Date(h.timestamp).toDateString() === today)
-                .reduce((sum, h) => sum + h.amount, 0);
+            return state.history.filter(h => new Date(h.timestamp).toDateString() === today).reduce((s, h) => s + h.amount, 0);
         }
 
-        // Render home tab
-        function renderHomeTab() {
-            // Main balance display
-            const balanceEl = document.getElementById('mainBalanceDisplay');
-            balanceEl.textContent = '¥' + state.balance.toLocaleString();
+        function getCategorySpending() {
+            const data = {};
+            state.history.forEach(h => {
+                const cat = h.category || '未分類';
+                data[cat] = (data[cat] || 0) + h.amount;
+            });
+            return Object.entries(data).map(([name, amount]) => ({ name, amount })).sort((a, b) => b.amount - a.amount);
+        }
 
-            // Balance color based on status
-            balanceEl.classList.remove('warning', 'danger');
-            if (state.balance < 0) {
-                balanceEl.classList.add('danger');
-            } else if (state.budget > 0 && state.balance < state.budget * 0.2) {
-                balanceEl.classList.add('warning');
+        function renderPieChart() {
+            const container = document.getElementById('chartContainer');
+            const spending = getCategorySpending();
+            const total = spending.reduce((s, c) => s + c.amount, 0);
+
+            if (total === 0) {
+                container.innerHTML = '<div class="no-chart-data">支出データがありません</div>';
+                return;
             }
 
-            // Stats
+            // Create conic gradient
+            let gradient = '';
+            let currentAngle = 0;
+            spending.forEach((cat, i) => {
+                const percent = (cat.amount / total) * 100;
+                const color = COLORS[i % COLORS.length];
+                gradient += `${color} ${currentAngle}deg ${currentAngle + (percent * 3.6)}deg, `;
+                currentAngle += percent * 3.6;
+            });
+            gradient = gradient.slice(0, -2);
+
+            // Legend
+            const legend = spending.map((cat, i) => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${COLORS[i % COLORS.length]}"></div>
+                    <span>${cat.name}</span>
+                    <span class="legend-amount">¥${cat.amount.toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="pie-chart" style="background: conic-gradient(${gradient})">
+                    <div class="pie-center">
+                        <div class="pie-center-label">合計</div>
+                        <div class="pie-center-value">¥${total.toLocaleString()}</div>
+                    </div>
+                </div>
+                <div class="chart-legend">${legend}</div>
+            `;
+        }
+
+        function renderHomeTab() {
+            const bal = document.getElementById('mainBalanceDisplay');
+            bal.textContent = '¥' + state.balance.toLocaleString();
+            bal.classList.remove('warning', 'danger');
+            if (state.balance < 0) bal.classList.add('danger');
+            else if (state.budget > 0 && state.balance < state.budget * 0.2) bal.classList.add('warning');
+
             document.getElementById('statBudget').textContent = '¥' + state.budget.toLocaleString();
             document.getElementById('statSpent').textContent = '¥' + state.spent.toLocaleString();
             document.getElementById('statToday').textContent = '¥' + getTodaySpending().toLocaleString();
 
-            // Progress bar
-            const usagePercent = state.budget > 0 ? Math.min((state.spent / state.budget) * 100, 100) : 0;
-            document.getElementById('progressFill').style.width = usagePercent + '%';
-            document.getElementById('usagePercent').textContent = Math.round(usagePercent) + '%使用';
+            const pct = state.budget > 0 ? Math.min((state.spent / state.budget) * 100, 100) : 0;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('usagePercent').textContent = Math.round(pct) + '%使用';
 
-            // Daily warning
-            const dailyWarning = document.getElementById('dailyWarning');
+            // Warning
+            const warn = document.getElementById('dailyWarning');
             const todaySpent = getTodaySpending();
             if (state.budget > 0) {
-                const dailyBudget = state.budget / 30;
-                if (todaySpent > dailyBudget * 1.5) {
-                    dailyWarning.style.display = 'flex';
-                    dailyWarning.classList.add('danger');
-                    dailyWarning.classList.remove('warning');
-                    document.getElementById('dailyWarningText').textContent = `今日の支出が1日平均の150%を超えています！（¥${todaySpent.toLocaleString()} / ¥${Math.round(dailyBudget).toLocaleString()}）`;
-                } else if (todaySpent > dailyBudget) {
-                    dailyWarning.style.display = 'flex';
-                    dailyWarning.classList.remove('danger');
-                    document.getElementById('dailyWarningText').textContent = `今日の支出が1日平均を超えています（¥${todaySpent.toLocaleString()} / ¥${Math.round(dailyBudget).toLocaleString()}）`;
+                const daily = state.budget / 30;
+                if (todaySpent > daily * 1.5) {
+                    warn.style.display = 'flex';
+                    warn.classList.add('danger');
+                    document.getElementById('dailyWarningText').textContent = `今日: ¥${todaySpent.toLocaleString()} / 1日平均: ¥${Math.round(daily).toLocaleString()}`;
+                } else if (todaySpent > daily) {
+                    warn.style.display = 'flex';
+                    warn.classList.remove('danger');
+                    document.getElementById('dailyWarningText').textContent = `今日の支出が1日平均を超えています`;
                 } else {
-                    dailyWarning.style.display = 'none';
+                    warn.style.display = 'none';
                 }
             } else {
-                dailyWarning.style.display = 'none';
+                warn.style.display = 'none';
             }
 
-            // Category summary cards
-            const summaryList = document.getElementById('categorySummaryList');
+            // Category cards
+            const list = document.getElementById('categorySummaryList');
             if (state.categories.length === 0) {
-                summaryList.innerHTML = `
-                    <div class="no-categories-msg">
-                        カテゴリを追加して支出を管理しましょう
-                        <br><button class="btn-primary" onclick="openSettings()">設定を開く</button>
-                    </div>
-                `;
+                list.innerHTML = `<div class="no-categories-msg">カテゴリを追加しましょう<br><button class="btn-primary" onclick="openSettings()">設定</button></div>`;
             } else {
-                let html = '';
-                state.categories.forEach(cat => {
-                    const catSpent = state.history
-                        .filter(h => h.category === cat)
-                        .reduce((sum, h) => sum + h.amount, 0);
-
-                    html += `
-                        <div class="category-summary-card" onclick="switchTab('${cat}')">
-                            <span class="category-summary-name">${cat}</span>
-                            <span class="category-summary-spent">¥${catSpent.toLocaleString()}</span>
-                        </div>
-                    `;
-                });
-                summaryList.innerHTML = html;
+                list.innerHTML = state.categories.map(cat => {
+                    const spent = state.history.filter(h => h.category === cat).reduce((s, h) => s + h.amount, 0);
+                    return `<div class="category-summary-card" onclick="switchTab('${cat}')">
+                        <span class="category-summary-name">${cat}</span>
+                        <span class="category-summary-spent">¥${spent.toLocaleString()}</span>
+                    </div>`;
+                }).join('');
             }
 
-            // Recent history (last 5)
-            const historyList = document.getElementById('homeHistoryList');
+            // History
+            const hist = document.getElementById('homeHistoryList');
             if (state.history.length === 0) {
-                historyList.innerHTML = '<div class="empty-history">履歴がありません</div>';
+                hist.innerHTML = '<div class="empty-history">履歴がありません</div>';
             } else {
-                historyList.innerHTML = state.history.slice(-5).reverse().map(item => `
+                hist.innerHTML = state.history.slice(-5).reverse().map(h => `
                     <div class="history-item">
                         <div class="history-info">
-                            <span class="history-date">${item.date}</span>
-                            <span class="history-category">${item.category || '未分類'}</span>
+                            <span class="history-date">${h.date}</span>
+                            <span class="history-category">${h.category || '未分類'}</span>
                         </div>
-                        <span class="history-amount">-¥${item.amount.toLocaleString()}</span>
+                        <span class="history-amount">-¥${h.amount.toLocaleString()}</span>
                     </div>
                 `).join('');
             }
         }
 
-        // Render category tabs content
         function renderCategoryTabs() {
             const container = document.querySelector('.container');
             document.querySelectorAll('.tab-content:not(#tab-home)').forEach(el => el.remove());
 
             state.categories.forEach(cat => {
-                const catSpent = state.history
-                    .filter(h => h.category === cat)
-                    .reduce((sum, h) => sum + h.amount, 0);
+                const spent = state.history.filter(h => h.category === cat).reduce((s, h) => s + h.amount, 0);
+                const hist = state.history.filter(h => h.category === cat);
 
-                const catHistory = state.history.filter(h => h.category === cat);
-
-                const tabContent = document.createElement('div');
-                tabContent.className = 'tab-content' + (currentTab === cat ? ' active' : '');
-                tabContent.id = 'tab-' + cat;
-
-                tabContent.innerHTML = `
+                const div = document.createElement('div');
+                div.className = 'tab-content' + (currentTab === cat ? ' active' : '');
+                div.id = 'tab-' + cat;
+                div.innerHTML = `
                     <div class="balance-section">
-                        <div class="balance-label">${cat} 支出合計</div>
-                        <div class="category-balance-amount">¥${catSpent.toLocaleString()}</div>
-                        <div class="category-budget-info">
-                            このカテゴリでの支出: ${catHistory.length}件
-                        </div>
+                        <div class="balance-label">${cat} 使用額</div>
+                        <div class="category-balance-amount">¥${spent.toLocaleString()}</div>
+                        <div class="category-budget-info">${hist.length}件の支出</div>
                     </div>
-
                     <div class="input-section">
-                        <h2>${cat}の支出を入力</h2>
+                        <h2>${cat}に追加</h2>
                         <div class="quick-amounts">
                             <button class="quick-btn" onclick="categoryQuickPay('${cat}', 100)">¥100</button>
                             <button class="quick-btn" onclick="categoryQuickPay('${cat}', 500)">¥500</button>
@@ -1266,279 +1285,204 @@
                             <button class="quick-btn" onclick="categoryQuickPay('${cat}', 5000)">¥5K</button>
                         </div>
                         <div class="input-group">
-                            <label>金額 (Amount)</label>
-                            <input type="number" id="amount-${cat}" placeholder="0" min="0">
+                            <label>金額</label>
+                            <input type="number" id="amount-${cat}" placeholder="0" min="0" inputmode="numeric">
                         </div>
                         <button class="pay-btn" onclick="recordExpense('${cat}')">▶ PAY</button>
                     </div>
-
                     <div class="history-section">
                         <div class="history-header">
-                            <h2>${cat}の履歴</h2>
+                            <h2>履歴</h2>
                             <button class="clear-history-btn" onclick="clearCategoryHistory('${cat}')">クリア</button>
                         </div>
                         <div class="history-list">
-                            ${catHistory.length === 0 ?
-                        '<div class="empty-history">履歴がありません</div>' :
-                        catHistory.slice().reverse().map(item => `
+                            ${hist.length === 0 ? '<div class="empty-history">履歴がありません</div>' :
+                        hist.slice().reverse().map(h => `
                                     <div class="history-item">
-                                        <div class="history-info">
-                                            <span class="history-date">${item.date}</span>
-                                        </div>
-                                        <span class="history-amount">-¥${item.amount.toLocaleString()}</span>
+                                        <div class="history-info"><span class="history-date">${h.date}</span></div>
+                                        <span class="history-amount">-¥${h.amount.toLocaleString()}</span>
                                     </div>
                                 `).join('')
                     }
                         </div>
                     </div>
                 `;
-
-                container.appendChild(tabContent);
+                container.appendChild(div);
             });
 
-            // Add enter key support
             state.categories.forEach(cat => {
                 const input = document.getElementById('amount-' + cat);
                 if (input) input.addEventListener('keypress', e => { if (e.key === 'Enter') recordExpense(cat); });
             });
         }
 
-        // Render category list in settings
         function renderCategoryList() {
-            const listEl = document.getElementById('categoryList');
+            const list = document.getElementById('categoryList');
             if (state.categories.length === 0) {
-                listEl.innerHTML = '<div class="empty-categories">カテゴリがありません</div>';
-                return;
+                list.innerHTML = '<div class="empty-categories">カテゴリがありません</div>';
+            } else {
+                list.innerHTML = state.categories.map(cat => `
+                    <div class="category-item">
+                        <span class="category-name">${cat}</span>
+                        <button class="category-delete-btn" onclick="deleteCategory('${cat}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                `).join('');
             }
-            listEl.innerHTML = state.categories.map(cat => `
-                <div class="category-item">
-                    <span class="category-name">${cat}</span>
-                    <button class="category-delete-btn" onclick="deleteCategory('${cat}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-            `).join('');
         }
 
-        // Update undo button state
         function updateUndoButton() {
-            const btn = document.getElementById('undoBtn');
-            btn.disabled = state.history.length === 0;
+            document.getElementById('undoBtn').disabled = state.history.length === 0;
         }
 
-        // Quick pay from home
         function quickPay(amount) {
-            const category = document.getElementById('homeCategorySelect').value;
-            recordExpenseWithAmount(amount, category);
+            const cat = document.getElementById('homeCategorySelect').value;
+            recordExpenseWithAmount(amount, cat);
         }
 
-        // Category quick pay
-        function categoryQuickPay(category, amount) {
-            recordExpenseWithAmount(amount, category);
+        function categoryQuickPay(cat, amount) {
+            recordExpenseWithAmount(amount, cat);
         }
 
-        // Home record expense
         function homeRecordExpense() {
             const amount = parseInt(document.getElementById('homeAmountInput').value) || 0;
-            const category = document.getElementById('homeCategorySelect').value;
-
-            if (amount <= 0) {
-                showToast('金額を入力してください');
-                return;
-            }
-
-            recordExpenseWithAmount(amount, category);
+            const cat = document.getElementById('homeCategorySelect').value;
+            if (amount <= 0) { showToast('金額を入力'); return; }
+            recordExpenseWithAmount(amount, cat);
             document.getElementById('homeAmountInput').value = '';
         }
 
-        // Record expense with amount
         function recordExpenseWithAmount(amount, category) {
             const now = new Date();
             const date = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-            const expense = {
-                date,
-                category,
-                amount,
-                timestamp: now.toISOString()
-            };
-
-            state.history.push(expense);
-            lastExpense = expense;
-
+            state.history.push({ date, category, amount, timestamp: now.toISOString() });
             state.spent += amount;
             state.balance = state.budget - state.spent;
-
             saveState();
             renderAll();
-            showToast(`¥${amount.toLocaleString()} を記録しました`);
+            showToast(`¥${amount.toLocaleString()} 記録`);
         }
 
-        // Record expense from category tab
-        function recordExpense(category) {
-            const amountInput = document.getElementById('amount-' + category);
-            const amount = parseInt(amountInput.value) || 0;
-
-            if (amount <= 0) {
-                showToast('金額を入力してください');
-                return;
-            }
-
-            recordExpenseWithAmount(amount, category);
-            amountInput.value = '';
+        function recordExpense(cat) {
+            const input = document.getElementById('amount-' + cat);
+            const amount = parseInt(input.value) || 0;
+            if (amount <= 0) { showToast('金額を入力'); return; }
+            recordExpenseWithAmount(amount, cat);
+            input.value = '';
         }
 
-        // Undo last expense
         function undoLastExpense() {
             if (state.history.length === 0) return;
-
             const last = state.history.pop();
             state.spent -= last.amount;
             state.balance = state.budget - state.spent;
-
             saveState();
             renderAll();
-            showToast(`¥${last.amount.toLocaleString()} を取消しました`);
+            showToast(`¥${last.amount.toLocaleString()} 取消`);
         }
 
-        // Set budget
         function setBudget() {
             const budget = parseInt(document.getElementById('budgetInput').value) || 0;
-            if (budget <= 0) {
-                showToast('予算を入力してください');
-                return;
-            }
+            if (budget <= 0) { showToast('予算を入力'); return; }
             state.budget = budget;
             state.balance = budget - state.spent;
             saveState();
             renderAll();
             document.getElementById('budgetInput').value = '';
             closeSettings();
-            showToast(`予算を ¥${budget.toLocaleString()} に設定しました`);
+            showToast(`予算 ¥${budget.toLocaleString()}`);
         }
 
-        // Add category
         function addCategory() {
-            const input = document.getElementById('newCategoryInput');
-            const categoryName = input.value.trim();
-            if (!categoryName) {
-                showToast('カテゴリ名を入力してください');
-                return;
-            }
-            if (state.categories.includes(categoryName)) {
-                showToast('このカテゴリは既に存在します');
-                return;
-            }
-            state.categories.push(categoryName);
+            const name = document.getElementById('newCategoryInput').value.trim();
+            if (!name) { showToast('カテゴリ名を入力'); return; }
+            if (state.categories.includes(name)) { showToast('既に存在します'); return; }
+            state.categories.push(name);
             saveState();
             renderAll();
-            input.value = '';
-            showToast(`「${categoryName}」を追加しました`);
+            document.getElementById('newCategoryInput').value = '';
+            showToast(`「${name}」追加`);
         }
 
-        // Delete category
-        function deleteCategory(categoryName) {
-            if (!confirm(`「${categoryName}」を削除しますか？`)) return;
-            state.categories = state.categories.filter(c => c !== categoryName);
-            if (currentTab === categoryName) currentTab = 'home';
+        function deleteCategory(name) {
+            if (!confirm(`「${name}」を削除？`)) return;
+            state.categories = state.categories.filter(c => c !== name);
+            if (currentTab === name) currentTab = 'home';
             saveState();
             renderAll();
-            showToast(`「${categoryName}」を削除しました`);
+            showToast('削除しました');
         }
 
-        // Clear category history
-        function clearCategoryHistory(category) {
-            if (!confirm(`「${category}」の履歴をすべて削除しますか？`)) return;
-            const removedAmount = state.history.filter(h => h.category === category).reduce((sum, h) => sum + h.amount, 0);
-            state.history = state.history.filter(h => h.category !== category);
-            state.spent -= removedAmount;
+        function clearCategoryHistory(cat) {
+            if (!confirm(`「${cat}」の履歴を削除？`)) return;
+            const removed = state.history.filter(h => h.category === cat).reduce((s, h) => s + h.amount, 0);
+            state.history = state.history.filter(h => h.category !== cat);
+            state.spent -= removed;
             state.balance = state.budget - state.spent;
             saveState();
             renderAll();
-            showToast('履歴をクリアしました');
+            showToast('クリア');
         }
 
-        // Clear all history
         function clearAllHistory() {
-            if (!confirm('すべての履歴を削除しますか？')) return;
+            if (!confirm('全履歴を削除？')) return;
             state.history = [];
             state.spent = 0;
             state.balance = state.budget;
             saveState();
             renderAll();
-            showToast('すべての履歴をクリアしました');
+            showToast('全クリア');
         }
 
-        // Reset all data
         function resetAll() {
-            if (!confirm('すべてのデータをリセットしますか？この操作は元に戻せません。')) return;
+            if (!confirm('全データをリセット？')) return;
             state = { budget: 0, balance: 0, spent: 0, history: [], categories: [] };
             currentTab = 'home';
             saveState();
             renderAll();
             closeSettings();
-            showToast('データをリセットしました');
+            showToast('リセット完了');
         }
 
-        // Export data
         function exportData() {
-            const dataStr = JSON.stringify(state, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
+            const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `limit-keeper-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.href = URL.createObjectURL(blob);
+            a.download = `limit-keeper-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
-            URL.revokeObjectURL(url);
-            showToast('データをエクスポートしました');
+            showToast('エクスポート完了');
         }
 
-        // Import data
-        function importData(event) {
-            const file = event.target.files[0];
+        function importData(e) {
+            const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = function (ev) {
                 try {
-                    const importedState = JSON.parse(e.target.result);
-                    if (importedState.budget !== undefined && importedState.history !== undefined) {
-                        state = importedState;
+                    const data = JSON.parse(ev.target.result);
+                    if (data.budget !== undefined && data.history !== undefined) {
+                        state = data;
                         saveState();
                         renderAll();
-                        showToast('データをインポートしました');
+                        showToast('インポート完了');
                     } else {
-                        showToast('無効なファイル形式です');
+                        showToast('無効なファイル');
                     }
-                } catch (err) {
-                    showToast('ファイルの読み込みに失敗しました');
-                }
+                } catch { showToast('読み込み失敗'); }
             };
             reader.readAsText(file);
-            event.target.value = '';
+            e.target.value = '';
         }
 
-        // Settings modal controls
-        function openSettings() {
-            document.getElementById('settingsModal').classList.add('active');
-        }
+        function openSettings() { document.getElementById('settingsModal').classList.add('active'); }
+        function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
 
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
-
-        document.getElementById('settingsModal').addEventListener('click', function (e) {
-            if (e.target === this) closeSettings();
-        });
-
-        // Enter key support
+        document.getElementById('settingsModal').addEventListener('click', function (e) { if (e.target === this) closeSettings(); });
         document.getElementById('homeAmountInput').addEventListener('keypress', e => { if (e.key === 'Enter') homeRecordExpense(); });
         document.getElementById('budgetInput').addEventListener('keypress', e => { if (e.key === 'Enter') setBudget(); });
         document.getElementById('newCategoryInput').addEventListener('keypress', e => { if (e.key === 'Enter') addCategory(); });
 
-        // Initialize app
         init();
     </script>
 </body>
