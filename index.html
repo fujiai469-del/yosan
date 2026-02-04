@@ -217,10 +217,10 @@
             color: var(--text-muted);
         }
 
-        /* Stats Grid - 3 Column Mobile */
+        /* Stats Grid - 2x2 Mobile */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-bottom: 12px;
         }
@@ -253,6 +253,106 @@
 
         .stat-value.accent {
             color: var(--accent);
+        }
+
+        .stat-value.success {
+            color: var(--success);
+        }
+
+        .stat-value.warning {
+            color: var(--warning);
+        }
+
+        .stat-value.danger {
+            color: var(--danger);
+        }
+
+        /* Budget Pace Section */
+        .budget-pace-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .budget-pace-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .pace-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .pace-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 14px 12px;
+            text-align: center;
+            position: relative;
+        }
+
+        .pace-card.highlight {
+            border-color: var(--accent);
+            background: rgba(245, 130, 32, 0.1);
+        }
+
+        .pace-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .pace-amount {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        @media (min-width: 400px) {
+            .pace-amount {
+                font-size: 26px;
+            }
+        }
+
+        .pace-sub {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .pace-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        .pace-status.ok {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .pace-status.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .pace-status.danger {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--danger);
         }
 
         /* Pie Chart Section */
@@ -968,8 +1068,31 @@
                     <div class="stat-value" id="statSpent">¥0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">今日</div>
+                    <div class="stat-label">今日の支出</div>
                     <div class="stat-value" id="statToday">¥0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">残り日数</div>
+                    <div class="stat-value" id="statDaysLeft">30日</div>
+                </div>
+            </div>
+
+            <!-- Budget Pace -->
+            <div class="budget-pace-section" id="budgetPaceSection">
+                <div class="budget-pace-title">使える金額の目安</div>
+                <div class="pace-grid">
+                    <div class="pace-card highlight">
+                        <div class="pace-label">1日あたり</div>
+                        <div class="pace-amount" id="paceDaily">¥0</div>
+                        <div class="pace-sub">今日の残り</div>
+                        <div class="pace-status ok" id="paceDailyStatus">OK</div>
+                    </div>
+                    <div class="pace-card">
+                        <div class="pace-label">1週間あたり</div>
+                        <div class="pace-amount" id="paceWeekly">¥0</div>
+                        <div class="pace-sub">今週の残り</div>
+                        <div class="pace-status ok" id="paceWeeklyStatus">OK</div>
+                    </div>
                 </div>
             </div>
 
@@ -1193,6 +1316,15 @@
             `;
         }
 
+        function getWeekSpending() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - dayOfWeek);
+            startOfWeek.setHours(0, 0, 0, 0);
+            return state.history.filter(h => new Date(h.timestamp) >= startOfWeek).reduce((s, h) => s + h.amount, 0);
+        }
+
         function renderHomeTab() {
             const bal = document.getElementById('mainBalanceDisplay');
             bal.textContent = '¥' + state.balance.toLocaleString();
@@ -1208,9 +1340,68 @@
             document.getElementById('progressFill').style.width = pct + '%';
             document.getElementById('usagePercent').textContent = Math.round(pct) + '%使用';
 
+            // Budget Pace Calculation
+            const todaySpent = getTodaySpending();
+            const weekSpent = getWeekSpending();
+
+            if (state.budget > 0 && state.balance > 0) {
+                // Calculate remaining days in month (assuming 30-day budget period)
+                const daysRemaining = Math.max(1, Math.ceil(state.balance / (state.budget / 30)));
+                document.getElementById('statDaysLeft').textContent = daysRemaining + '日';
+
+                // Daily pace: remaining balance / remaining days
+                const dailyBudget = Math.floor(state.balance / daysRemaining);
+                const dailyRemaining = Math.max(0, dailyBudget - todaySpent);
+                document.getElementById('paceDaily').textContent = '¥' + dailyRemaining.toLocaleString();
+
+                // Update daily status
+                const dailyStatus = document.getElementById('paceDailyStatus');
+                if (todaySpent > dailyBudget * 1.5) {
+                    dailyStatus.textContent = '超過！';
+                    dailyStatus.className = 'pace-status danger';
+                } else if (todaySpent > dailyBudget) {
+                    dailyStatus.textContent = '注意';
+                    dailyStatus.className = 'pace-status warning';
+                } else {
+                    dailyStatus.textContent = 'OK';
+                    dailyStatus.className = 'pace-status ok';
+                }
+
+                // Weekly pace: daily * 7
+                const weeklyBudget = dailyBudget * 7;
+                const weeklyRemaining = Math.max(0, weeklyBudget - weekSpent);
+                document.getElementById('paceWeekly').textContent = '¥' + weeklyRemaining.toLocaleString();
+
+                // Update weekly status
+                const weeklyStatus = document.getElementById('paceWeeklyStatus');
+                if (weekSpent > weeklyBudget * 1.2) {
+                    weeklyStatus.textContent = '超過！';
+                    weeklyStatus.className = 'pace-status danger';
+                } else if (weekSpent > weeklyBudget * 0.8) {
+                    weeklyStatus.textContent = '注意';
+                    weeklyStatus.className = 'pace-status warning';
+                } else {
+                    weeklyStatus.textContent = 'OK';
+                    weeklyStatus.className = 'pace-status ok';
+                }
+
+                document.getElementById('budgetPaceSection').style.display = 'block';
+            } else if (state.budget > 0) {
+                document.getElementById('statDaysLeft').textContent = '0日';
+                document.getElementById('paceDaily').textContent = '¥0';
+                document.getElementById('paceWeekly').textContent = '¥0';
+                document.getElementById('paceDailyStatus').textContent = '超過！';
+                document.getElementById('paceDailyStatus').className = 'pace-status danger';
+                document.getElementById('paceWeeklyStatus').textContent = '超過！';
+                document.getElementById('paceWeeklyStatus').className = 'pace-status danger';
+                document.getElementById('budgetPaceSection').style.display = 'block';
+            } else {
+                document.getElementById('statDaysLeft').textContent = '--';
+                document.getElementById('budgetPaceSection').style.display = 'none';
+            }
+
             // Warning
             const warn = document.getElementById('dailyWarning');
-            const todaySpent = getTodaySpending();
             if (state.budget > 0) {
                 const daily = state.budget / 30;
                 if (todaySpent > daily * 1.5) {
