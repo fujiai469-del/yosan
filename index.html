@@ -1418,7 +1418,10 @@
                     window.showToast("クラウドに保存しました");
                 } catch (e) {
                     console.error("Save failed", e);
-                    window.showToast("保存に失敗しました");
+                    // Show specific error to help debugging
+                    let msg = "保存に失敗しました";
+                    if (e.code === 'permission-denied') msg = "権限がありません (Firestoreのルールを確認してください)";
+                    window.showToast(msg + ": " + e.message);
                 }
             },
 
