@@ -1344,22 +1344,29 @@
             const todaySpent = getTodaySpending();
             const weekSpent = getWeekSpending();
 
-            if (state.budget > 0 && state.balance > 0) {
-                // Calculate remaining days in month (assuming 30-day budget period)
-                const daysRemaining = Math.max(1, Math.ceil(state.balance / (state.budget / 30)));
+            if (state.budget > 0) {
+                // Calculate virtual balance (balance at start of day) to keep daily budget stable during the day
+                const currentBalance = state.balance;
+                const virtualBalance = currentBalance + todaySpent;
+
+                // Calculate remaining days based on standard daily avg (Budget / 30)
+                const dailyAvg = state.budget / 30;
+                const daysRemaining = Math.max(1, Math.ceil(virtualBalance / dailyAvg));
+
                 document.getElementById('statDaysLeft').textContent = daysRemaining + '日';
 
-                // Daily pace: remaining balance / remaining days
-                const dailyBudget = Math.floor(state.balance / daysRemaining);
-                const dailyRemaining = Math.max(0, dailyBudget - todaySpent);
-                document.getElementById('paceDaily').textContent = '¥' + dailyRemaining.toLocaleString();
+                // Daily allowance based on virtual balance
+                const dailyBudget = Math.floor(virtualBalance / daysRemaining);
+                const dailyRemaining = dailyBudget - todaySpent;
 
-                // Update daily status
+                document.getElementById('paceDaily').textContent = (dailyRemaining >= 0 ? '¥' : '-¥') + Math.abs(dailyRemaining).toLocaleString();
+
+                // Update daily status (80% warning, 100% over)
                 const dailyStatus = document.getElementById('paceDailyStatus');
-                if (todaySpent > dailyBudget * 1.5) {
-                    dailyStatus.textContent = '超過！';
+                if (todaySpent >= dailyBudget) {
+                    dailyStatus.textContent = '超過';
                     dailyStatus.className = 'pace-status danger';
-                } else if (todaySpent > dailyBudget) {
+                } else if (todaySpent >= dailyBudget * 0.8) {
                     dailyStatus.textContent = '注意';
                     dailyStatus.className = 'pace-status warning';
                 } else {
@@ -1367,17 +1374,20 @@
                     dailyStatus.className = 'pace-status ok';
                 }
 
-                // Weekly pace: daily * 7
+                // Weekly pace: current daily budget * 7
                 const weeklyBudget = dailyBudget * 7;
-                const weeklyRemaining = Math.max(0, weeklyBudget - weekSpent);
-                document.getElementById('paceWeekly').textContent = '¥' + weeklyRemaining.toLocaleString();
+                // For weekly remaining, we verify against the current week's spending
+                // But simplified: 1 week budget - this week's spending
+                const weeklyRemaining = weeklyBudget - weekSpent;
+
+                document.getElementById('paceWeekly').textContent = (weeklyRemaining >= 0 ? '¥' : '-¥') + Math.abs(weeklyRemaining).toLocaleString();
 
                 // Update weekly status
                 const weeklyStatus = document.getElementById('paceWeeklyStatus');
-                if (weekSpent > weeklyBudget * 1.2) {
-                    weeklyStatus.textContent = '超過！';
+                if (weekSpent >= weeklyBudget) {
+                    weeklyStatus.textContent = '超過';
                     weeklyStatus.className = 'pace-status danger';
-                } else if (weekSpent > weeklyBudget * 0.8) {
+                } else if (weekSpent >= weeklyBudget * 0.8) {
                     weeklyStatus.textContent = '注意';
                     weeklyStatus.className = 'pace-status warning';
                 } else {
@@ -1385,15 +1395,6 @@
                     weeklyStatus.className = 'pace-status ok';
                 }
 
-                document.getElementById('budgetPaceSection').style.display = 'block';
-            } else if (state.budget > 0) {
-                document.getElementById('statDaysLeft').textContent = '0日';
-                document.getElementById('paceDaily').textContent = '¥0';
-                document.getElementById('paceWeekly').textContent = '¥0';
-                document.getElementById('paceDailyStatus').textContent = '超過！';
-                document.getElementById('paceDailyStatus').className = 'pace-status danger';
-                document.getElementById('paceWeeklyStatus').textContent = '超過！';
-                document.getElementById('paceWeeklyStatus').className = 'pace-status danger';
                 document.getElementById('budgetPaceSection').style.display = 'block';
             } else {
                 document.getElementById('statDaysLeft').textContent = '--';
