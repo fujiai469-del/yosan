@@ -1268,14 +1268,6 @@
                     </div>
                 </div>
                 <div class="modal-section">
-                    <h3>アカウント連携 (同期)</h3>
-                    <div
-                        style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-tertiary); padding:12px; border:1px solid var(--border-color); border-radius:2px;">
-                        <span id="authStatus" style="font-size:12px; color:var(--text-secondary);">未連携</span>
-                        <button id="authBtn" class="btn-primary" style="padding:8px 12px; font-size:11px;">連携する</button>
-                    </div>
-                </div>
-                <div class="modal-section">
                     <h3>データ管理</h3>
                     <div class="data-actions">
                         <button class="btn-secondary" onclick="exportData()">エクスポート</button>
@@ -1323,165 +1315,6 @@
 
     <div class="toast" id="toast"></div>
 
-    <!-- Auth Modal -->
-    <div class="modal-overlay" id="authModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>アカウント連携</h2>
-                <button class="modal-close" onclick="closeAuthModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-section" style="text-align: center;">
-                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
-                        ログインすると、スマホ・PC間でデータを同期できます。<br>
-                        (データはクラウドに安全に保存されます)
-                    </p>
-                    <div class="input-group">
-                        <label style="text-align:left;">メールアドレス</label>
-                        <input type="text" id="authEmail" placeholder="your@email.com">
-                    </div>
-                    <div class="input-group">
-                        <label style="text-align:left;">パスワード</label>
-                        <input type="password" id="authPassword" placeholder="******">
-                    </div>
-                    <div style="display:flex; gap:10px; margin-top:20px;">
-                        <button class="btn-primary" onclick="handleLogin()" style="flex:1;">ログイン</button>
-                        <button class="btn-secondary" onclick="handleSignup()" style="flex:1;">新規登録</button>
-                    </div>
-                    <p id="authError" style="color: var(--danger); font-size: 11px; margin-top: 10px;"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase SDK & Sync Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBTXuIRNSrVNzUlozgMB2C_C_HN6SVK_rE",
-            authDomain: "limit-keeper.firebaseapp.com",
-            projectId: "limit-keeper",
-            storageBucket: "limit-keeper.firebasestorage.app",
-            messagingSenderId: "471190173966",
-            appId: "1:471190173966:web:552acd5bc0073f20f53f5f",
-            measurementId: "G-W8XTBFH9HV"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Global Sync Object
-        window.LimitKeeperSync = {
-            user: null,
-
-            async login(email, password) {
-                try {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    return { success: true };
-                } catch (e) {
-                    let msg = e.message;
-                    if (e.code === 'auth/invalid-credential') msg = 'メールまたはパスワードが間違っています';
-                    return { success: false, error: msg };
-                }
-            },
-
-            async signup(email, password) {
-                try {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                    return { success: true };
-                } catch (e) {
-                    let msg = e.message;
-                    if (e.code === 'auth/email-already-in-use') msg = 'このメールアドレスは既に登録されています';
-                    if (e.code === 'auth/weak-password') msg = 'パスワードは6文字以上にしてください';
-                    return { success: false, error: msg };
-                }
-            },
-
-            async logout() {
-                await signOut(auth);
-            },
-
-            async saveData(state) {
-                if (!this.user) return;
-                try {
-                    await setDoc(doc(db, "users", this.user.uid), {
-                        data: state,
-                        updatedAt: new Date().toISOString()
-                    });
-                    console.log("Saved to cloud");
-                    window.showToast("クラウドに保存しました");
-                } catch (e) {
-                    console.error("Save failed", e);
-                    // Show specific error to help debugging
-                    let msg = "保存に失敗しました";
-                    if (e.code === 'permission-denied') msg = "権限がありません (Firestoreのルールを確認してください)";
-                    window.showToast(msg + ": " + e.message);
-                }
-            },
-
-            async loadData() {
-                if (!this.user) return null;
-                try {
-                    const snap = await getDoc(doc(db, "users", this.user.uid));
-                    if (snap.exists()) {
-                        return snap.data().data;
-                    }
-                } catch (e) {
-                    console.error("Load failed", e);
-                }
-                return null;
-            }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            window.LimitKeeperSync.user = user;
-            updateAuthUI(user);
-
-            if (user) {
-                window.closeAuthModal(); // Close modal if open
-                window.showToast("ログインしました");
-
-                // DATA SYNC LOGIC
-                window.LimitKeeperSync.loadData().then(cloudData => {
-                    if (cloudData) {
-                        // Cloud data exists. Import it.
-                        // Ideally we confirm, but for simplicity we load cloud data to sync devices.
-                        if (window.onCloudDataLoaded) window.onCloudDataLoaded(cloudData);
-                    } else {
-                        // First time login, or cloud empty. Upload local data.
-                        if (window.onCloudLoginFirstTime) window.onCloudLoginFirstTime();
-                    }
-                });
-            } else {
-                window.showToast("ログアウトしました");
-            }
-        });
-
-        function updateAuthUI(user) {
-            const status = document.getElementById('authStatus');
-            const btn = document.getElementById('authBtn');
-            if (status && btn) {
-                if (user) {
-                    status.textContent = `${user.email}`;
-                    status.style.color = 'var(--success)';
-                    btn.textContent = 'ログアウト';
-                    btn.onclick = () => window.LimitKeeperSync.logout();
-                } else {
-                    status.textContent = '未連携 (ローカルのみ)';
-                    status.style.color = 'var(--text-secondary)';
-                    btn.textContent = '連携する';
-                    btn.onclick = window.openAuthModal;
-                }
-            }
-        }
-    </script>
-
     <script>
         const COLORS = ['#F58220', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#6366F1', '#14B8A6'];
 
@@ -1501,11 +1334,6 @@
 
         function saveState() {
             localStorage.setItem('limitKeeperState', JSON.stringify(state));
-
-            // Cloud Sync
-            if (window.LimitKeeperSync && window.LimitKeeperSync.user) {
-                window.LimitKeeperSync.saveData(state);
-            }
         }
 
         function showToast(msg) {
@@ -2068,61 +1896,6 @@
         document.getElementById('newCategoryInput').addEventListener('keypress', e => { if (e.key === 'Enter') addCategory(); });
 
         init();
-        // Auth Modal Functions
-        function openAuthModal() { document.getElementById('authModal').classList.add('active'); }
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('active');
-            document.getElementById('authError').textContent = '';
-        }
-
-        async function handleLogin() {
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPassword').value;
-            const err = document.getElementById('authError');
-
-            if (!email || !pass) { err.textContent = 'メールアドレスとパスワードを入力してください'; return; }
-
-            err.textContent = 'ログイン中...';
-            const res = await window.LimitKeeperSync.login(email, pass);
-            if (!res.success) err.textContent = res.error;
-        }
-
-        async function handleSignup() {
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPassword').value;
-            const err = document.getElementById('authError');
-
-            if (!email || !pass) { err.textContent = 'メールアドレスとパスワードを入力してください'; return; }
-
-            err.textContent = '登録処理中...';
-            const res = await window.LimitKeeperSync.signup(email, pass);
-            if (!res.success) err.textContent = res.error;
-        }
-
-        // Cloud Callbacks attached to window
-        window.openAuthModal = openAuthModal;
-        window.closeAuthModal = closeAuthModal;
-
-        window.onCloudDataLoaded = function (cloudData) {
-            // Confirm with user if local data is vastly different?
-            // For now, simple override from cloud is the safest for "sync"
-            if (confirm('クラウド上のデータが見つかりました。同期（読み込み）しますか？\n※現在のローカルデータは上書きされます')) {
-                state = cloudData;
-                saveState(); // Update local storage
-                renderAll();
-                showToast('データを同期しました');
-            }
-        };
-
-        window.onCloudLoginFirstTime = function () {
-            // Upload current local state to cloud
-            if (state.budget > 0 || state.history.length > 0) {
-                window.LimitKeeperSync.saveData(state);
-                showToast('ローカルデータをクラウドにアップロードしました');
-            }
-        };
-
-        document.getElementById('authModal').addEventListener('click', function (e) { if (e.target === this) closeAuthModal(); });
     </script>
 </body>
 
